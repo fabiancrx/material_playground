@@ -1,4 +1,7 @@
 A place to tweak your theme and see how it affects material widgets. Vendored from [flex_color_scheme](https://github.com/rydmike/flex_color_scheme/tree/master/example/lib/example_copy_paste_from_playground).
+
+[Material Playground demo](https://user-images.githubusercontent.com/37002358/231079783-c79d81b0-7349-4043-8b8b-3b61c5ba83ec.webm)
+
 ## Usage
 
 Here is a complete example of how to run an application while supplying a custom theme via the material app. The `MaterialPlayground` contains most material widgets which permits to easily on a single page test and iterate when designing your app and most importantly, check that your changes do not have undesired side-effects.
