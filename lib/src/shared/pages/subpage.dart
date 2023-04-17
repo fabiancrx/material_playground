@@ -4,7 +4,6 @@ import 'package:flutter/services.dart';
 
 import '../const/app.dart';
 import '../controllers/theme_controller.dart';
-import '../widgets/app/about.dart';
 import '../widgets/app/show_color_scheme_colors.dart';
 import '../widgets/app/show_sub_theme_colors.dart';
 import '../widgets/app/show_theme_data_colors.dart';
@@ -66,7 +65,6 @@ class _SubpageDemoState extends State<SubpageDemo> {
           extendBody: true,
           appBar: AppBar(
             title: const Text('Subpage Demo'),
-            actions: const <Widget>[AboutIconButton()],
             bottom: const TabBar(
               tabs: <Widget>[
                 Tab(text: 'Home'),

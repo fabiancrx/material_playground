@@ -36,7 +36,7 @@ class App {
   // triggering GitHub actions CI/CD that builds them.
   //
   // The name of the package this app demonstrates.
-  static const String packageName = 'FlexColor\u{00AD}Scheme';
+  static const String packageName = 'Material Playground';
   // Version of the WEB build, usually same as package, but it also has a
   // build numbers.
   static const String versionMajor = '7';

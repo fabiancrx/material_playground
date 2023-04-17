@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 
 import '../../const/app.dart';
 import '../../utils/colors_are_close.dart';
-import 'about.dart';
 
 // ignore_for_file: comment_references
 
@@ -581,7 +580,6 @@ class _ResponsiveScaffoldState extends State<ResponsiveScaffold> {
                 title: widget.title,
                 // We are using dynamic title content, we want it start aligned.
                 centerTitle: false,
-                actions: const <Widget>[AboutIconButton()],
                 // Some logic to show the implicit menu button on AppBar when
                 // there is no rail or menu.
                 automaticallyImplyLeading:
@@ -975,7 +973,6 @@ class _MenuLeadingItemState extends State<_MenuLeadingItem> {
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
-    final TextTheme textTheme = theme.textTheme;
     final TextTheme primaryTextTheme = theme.primaryTextTheme;
     const double hPadding = 5;
 
@@ -1018,38 +1015,6 @@ class _MenuLeadingItemState extends State<_MenuLeadingItem> {
                 _collapsed = !_collapsed;
               });
             },
-          ),
-          // Add some expand actions for access to mock functionality.
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (Widget child, Animation<double> animation) {
-              return SizeTransition(
-                sizeFactor: animation,
-                child: child,
-              );
-            },
-            child: _collapsed
-                ? const SizedBox.shrink()
-                : Padding(
-                    padding: const EdgeInsets.only(bottom: 8),
-                    child: Row(
-                      children: <Widget>[
-                        const Spacer(),
-                        TextButton(
-                          onPressed: () {
-                            showAppAboutDialog(context);
-                          },
-                          child: Column(
-                            children: <Widget>[
-                              const Icon(Icons.info, size: 30),
-                              Text('About', style: textTheme.labelSmall),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                      ],
-                    ),
-                  ),
           ),
         ],
       ),

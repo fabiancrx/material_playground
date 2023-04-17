@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../shared/const/app.dart';
-import '../shared/widgets/app/responsive_scaffold.dart';
 import '../shared/widgets/app/show_color_scheme_colors.dart';
 import '../shared/widgets/app/show_sub_pages.dart';
 import '../shared/widgets/app/show_theme_data_colors.dart';
@@ -12,6 +11,12 @@ import '../shared/widgets/universal/page_body.dart';
 import '../shared/widgets/universal/showcase_material.dart';
 import '../shared/widgets/universal/stateful_header_card.dart';
 import '../shared/widgets/universal/theme_mode_switch.dart';
+
+void main() {
+  runApp(MaterialApp(
+    home: MaterialPlayground(onThemeModeChanged: (_) {}),
+  ));
+}
 
 // -----------------------------------------------------------------------------
 // Home Page for the Copy Paste Playground
@@ -22,7 +27,7 @@ import '../shared/widgets/universal/theme_mode_switch.dart';
 class MaterialPlayground extends StatefulWidget {
   const MaterialPlayground({
     super.key,
-    required this.themeMode,
+    this.themeMode = ThemeMode.system,
     required this.onThemeModeChanged,
   });
 
@@ -35,32 +40,12 @@ class MaterialPlayground extends StatefulWidget {
 
 class _MaterialPlaygroundState extends State<MaterialPlayground> {
   late final ScrollController scrollController;
-  // Enabled state of each menuItem.
-  late List<bool> menuItemsEnabled;
-  // Active state of each menuItem.
-  late List<ResponsiveMenuItemIconState> menuItemsIconState;
 
   @override
   void initState() {
     super.initState();
-    scrollController =
-        ScrollController(keepScrollOffset: true, initialScrollOffset: 0);
+    scrollController = ScrollController(keepScrollOffset: true, initialScrollOffset: 0);
     // Set enabled menu items.
-    menuItemsEnabled =
-        List<bool>.generate(App.menuItems.length, (int i) => false);
-    menuItemsEnabled[2] = true;
-    // Set menu icons states to initial states, some are a loaded from
-    // persisted values via the theme controller.
-    menuItemsIconState = List<ResponsiveMenuItemIconState>.generate(
-        App.menuItems.length, (int i) => ResponsiveMenuItemIconState.primary);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    menuItemsIconState[2] = Theme.of(context).brightness == Brightness.light
-        ? ResponsiveMenuItemIconState.primary
-        : ResponsiveMenuItemIconState.secondary;
   }
 
   @override
@@ -75,50 +60,19 @@ class _MaterialPlaygroundState extends State<MaterialPlayground> {
     final double margins = App.responsiveInsets(media.size.width);
     final double topPadding = media.padding.top + kToolbarHeight + margins;
     final double bottomPadding = media.padding.bottom + margins;
-    final bool isPhone = media.size.width < App.phoneWidthBreakpoint ||
-        media.size.height < App.phoneHeightBreakpoint;
-    final bool isDark = Theme.of(context).brightness == Brightness.dark;
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: FlexColorScheme.themedSystemNavigationBar(
         context,
         systemNavBarStyle: FlexSystemNavBarStyle.transparent,
       ),
-      child: ResponsiveScaffold(
-        title: Text(App.title(context)),
-        menuTitle: const Text(App.packageName),
-        menuLeadingTitle: Text(
-          App.title(context),
-          style: Theme.of(context)
-              .textTheme
-              .titleSmall!
-              .copyWith(fontWeight: FontWeight.w600),
-        ),
-        menuLeadingSubtitle: const Text('Version ${App.versionMajor}'),
-        menuLeadingAvatarLabel: 'FCS',
-        menuItems: App.menuItems,
-        menuItemsEnabled: menuItemsEnabled,
-        menuItemsIconState: menuItemsIconState,
-        // Make Rail width larger when using it on tablet or desktop.
-        railWidth: isPhone ? 52 : 66,
-        breakpointShowFullMenu: App.desktopWidthBreakpoint,
-        extendBodyBehindAppBar: true,
-        extendBody: true,
-        onSelect: (int index) {
-          if (index == 2) {
-            if (isDark) {
-              widget.onThemeModeChanged(ThemeMode.light);
-            } else {
-              widget.onThemeModeChanged(ThemeMode.dark);
-            }
-          }
-        },
+      child: Scaffold(
+        appBar: AppBar(title: Text(App.packageName)),
         body: PageBody(
           controller: scrollController,
           constraints: const BoxConstraints(maxWidth: App.maxBodyWidth),
           child: ListView(
             controller: scrollController,
-            padding: EdgeInsets.fromLTRB(
-                margins, topPadding, margins, bottomPadding),
+            padding: EdgeInsets.fromLTRB(margins, topPadding, margins, bottomPadding),
             children: <Widget>[
               _MainPanel(
                 themeMode: widget.themeMode,
@@ -179,10 +133,8 @@ class _MainPanelState extends State<_MainPanel> {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.gradient_outlined, color: iconColor),
       title: const Text('Theme'),
@@ -231,10 +183,8 @@ class _MaterialButtonsShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.crop_16_9_outlined, color: iconColor),
       title: const Text('Material Buttons'),
@@ -268,10 +218,8 @@ class _ToggleFabSwitchesChipsShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.toggle_on_outlined, color: iconColor),
       title: const Text('Common Widgets'),
@@ -309,15 +257,14 @@ class _ToggleFabSwitchesChipsShowcase extends StatelessWidget {
 
 class _TextInputFieldShowcase extends StatelessWidget {
   const _TextInputFieldShowcase();
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.pin_outlined, color: iconColor),
       title: const Text('TextField'),
@@ -340,15 +287,14 @@ class _TextInputFieldShowcase extends StatelessWidget {
 
 class _ListTileShowcase extends StatelessWidget {
   const _ListTileShowcase();
+
   @override
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.dns_outlined, color: iconColor),
       title: const Text('ListTile'),
@@ -374,10 +320,8 @@ class _TabBarShowCase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.tab_outlined, color: iconColor),
       title: const Text('AppBar TabBar BottomAppBar'),
@@ -405,10 +349,8 @@ class _BottomBarShowCase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.video_label, color: iconColor),
       title: const Text('NavigationBar'),
@@ -433,10 +375,8 @@ class _NavigationRailShowCase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.view_sidebar_outlined, color: iconColor),
       title: const Text('NavigationRail'),
@@ -453,10 +393,8 @@ class _NavigationDrawerShowCase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.featured_video_outlined, color: iconColor),
       title: const Text('NavigationDrawer'),
@@ -480,10 +418,8 @@ class _DialogShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.branding_watermark_outlined, color: iconColor),
       title: const Text('Dialogs'),
@@ -510,10 +446,8 @@ class _MaterialAndBottomSheetShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.call_to_action_outlined, color: iconColor),
       title: const Text('Material, Banner, Sheet & Snack'),
@@ -539,10 +473,8 @@ class _CardShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
         leading: Icon(Icons.picture_in_picture_alt_outlined, color: iconColor),
         title: const Text('Card'),
@@ -561,10 +493,8 @@ class _TextThemeShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.font_download_outlined, color: iconColor),
       title: const Text('TextTheme'),
@@ -584,10 +514,8 @@ class _PrimaryTextThemeShowcase extends StatelessWidget {
     final ThemeData theme = Theme.of(context);
     final bool isLight = theme.brightness == Brightness.light;
     final Color iconColor = isLight
-        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99),
-            theme.colorScheme.onBackground)
-        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F),
-            theme.colorScheme.onBackground);
+        ? Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x99), theme.colorScheme.onBackground)
+        : Color.alphaBlend(theme.colorScheme.primary.withAlpha(0x7F), theme.colorScheme.onBackground);
     return StatefulHeaderCard(
       leading: Icon(Icons.font_download, color: iconColor),
       title: const Text('PrimaryTextTheme'),
