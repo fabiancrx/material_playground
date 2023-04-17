@@ -12,11 +12,6 @@ import '../shared/widgets/universal/showcase_material.dart';
 import '../shared/widgets/universal/stateful_header_card.dart';
 import '../shared/widgets/universal/theme_mode_switch.dart';
 
-void main() {
-  runApp(MaterialApp(
-    home: MaterialPlayground(onThemeModeChanged: (_) {}),
-  ));
-}
 
 // -----------------------------------------------------------------------------
 // Home Page for the Copy Paste Playground
